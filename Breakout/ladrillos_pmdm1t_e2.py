@@ -25,6 +25,35 @@ AZUL = (0, 0, 255)
 AZUL_OSCURO = (36, 90, 190)
 H_50D2FE = (94, 210, 254)
 
+# Tamaño de los bloques break-out
+largo_bloque = 87
+alto_bloque = 28
+
+
+class Bloque(pygame.sprite.Sprite):
+    # Esta clase representa a cada bloque que será golpeado por la pelota
+
+    def __init__(self, color, x, y):
+        # Constructor. Pasa el color del bloque y su posición x, y.
+
+        # Llama al constructor de la clase padre (Sprite)
+        super().__init__()
+
+        # Crea una imagen del bloque de tamaño apropiado
+        # El largo y alto son enviados como una lista al primer parámetro.
+        self.image = pygame.Surface([largo_bloque, alto_bloque])
+
+        # Rellenamos la imagen con el color apropiado
+        self.image.fill(color)
+
+        # Extraemos el objeto rectángulo que posee las dimensiones de la imagen
+        self.rect = self.image.get_rect()
+
+        # Movemos la esquina superior izquierda del rectángulo a las coordenadas x,y.
+        # Aquí es donde aparecerá nuestro bloque.
+        self.rect.x = x
+        self.rect.y = y
+
 
 class Pelota:
     def __init__(self, fichero_imagen):
@@ -32,6 +61,9 @@ class Pelota:
 
         # Imagen de la Pelota
         self.imagen = pygame.image.load(fichero_imagen).convert_alpha()
+        self.imagen = pygame.transform.scale(self.imagen, (30, 30))
+
+        self.imagenCollider = self.imagen.get_rect()
 
         # Dimensiones de la Pelota
         self.ancho, self.alto = self.imagen.get_size()
@@ -161,36 +193,6 @@ class Jugador(pygame.sprite.Sprite):
         ):
             pelota.dir_y = -pelota.dir_y
 
-
-# class Ladrillos(pygame.sprite.Sprite):
-#     def __init__(self, color, width, height):
-#         super().__init__()
-#         self.image = pygame.Surface([width, height])
-#         self.image.fill(BLANCO)
-#         self.image.set_colorkey(BLANCO)
-#         pygame.draw.rect(self.image, color, [0, 0, width, height])
-#         self.rect = self.image.get_rect()
-#
-#         all_bricks = pygame.sprite.Group()
-#         for i in range(7):
-#             brick = Ladrillos(ROJO, 80, 30)
-#             brick.rect.x = 20 + i * 70
-#             brick.rect.y = 60
-#             sprites.add(brick)
-#             all_bricks.add(brick)
-#         for i in range(7):
-#             brick = Ladrillos(BLANCO, 80, 30)
-#             brick.rect.x = 20 + i * 70
-#             brick.rect.y = 100
-#             sprites.add(brick)
-#             all_bricks.add(brick)
-#         for i in range(7):
-#             brick = Ladrillos(VERDE, 80, 30)
-#             brick.rect.x = 20 + i * 70
-#             brick.rect.y = 140
-#             sprites.add(brick)
-#             all_bricks.add(brick)
-
 def main():
     # Inicialización de Pygame, creación de la ventana, título y control de reloj.
     pygame.init()
@@ -202,12 +204,30 @@ def main():
     pygame.display.set_caption("Destrozando ladrillos")
     clock = pygame.time.Clock()
 
-    pelota = Pelota("imagenes/ball.png")
+    pelota = Pelota("imagenes/bola2.png")
 
     # Grupo de sprites, instanciación del objeto jugador.
     sprites = pygame.sprite.Group()
     pala = Jugador()
     sprites.add(pala)
+    bloques = pygame.sprite.Group()
+
+    # La parte superior del bloque (posición y)
+    top = 80
+
+    # Número de bloques a crear
+    numero_de_bloques = 8
+
+    # Cinco filas de bloques
+    for fila in range(5):
+        # 32 columnas de bloques
+        for columna in range(1, numero_de_bloques):
+            # Crea un bloque (color,x,y)
+            bloque = Bloque(AZUL, columna * (largo_bloque + 2) + 1, top)
+            bloques.add(bloque)
+            sprites.add(bloque)
+        # Mueve  hacia abajo el borde superior de la siguiente fila
+        top += alto_bloque + 2
 
     # Bucle de juego
     ejecutando = True
@@ -245,6 +265,17 @@ def main():
         pantalla.blit(text, (20, 10))
         text = font.render("Vidas: " + str(vidas), 1, BLANCO)
         pantalla.blit(text, (650, 10))
+
+        # Comprueba las colisiones entre las pelotas y los bloques
+        # bloquesmuertos = pygame.sprite.spritecollide(pelota, bloques, True)
+
+        # Si le damos a un bloque, botamos las pelotas
+        # if len(bloquesmuertos) > 0:
+            #pelota.botar(0)
+
+            # El juego se termina si todos los bloques desaparecen.
+            # if len(bloques) == 0:
+                # game_over = True
 
         # Actualiza el contenido de la pantalla.
         pygame.display.flip()
