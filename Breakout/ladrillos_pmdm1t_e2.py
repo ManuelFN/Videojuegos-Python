@@ -77,7 +77,7 @@ class Pelota(pygame.sprite.Sprite):  # Creamos la clase 'Pelota' que derivara de
             self.x = self.ancho_pantalla - self.largo - 1
 
         if self.y > 600:  # Si la pelota toca el borde inferior
-            # self.botar(1)
+            pygame.mixer.Sound.play(sonidoPerderVida)
             self.reiniciar()
 
     def reiniciar(self):
@@ -154,6 +154,7 @@ sonidoPunto = pygame.mixer.Sound("Sonidos/punto.ogg")  # Creamos una variable qu
 sonidoVictoria = pygame.mixer.Sound("Sonidos/victoria.ogg")  # Creamos una variable que guarde el sonido para cuando ganas
 sonidoDerrota = pygame.mixer.Sound("Sonidos/derrota.ogg")  # Creamos una variable que guarde el sonido para cuando pierdes
 sonidoExplosion = pygame.mixer.Sound("Sonidos/explosion.ogg")  # Creamos una variable que guarde el sonido de rebote con los bloques
+sonidoPerderVida = pygame.mixer.Sound("Sonidos/perder_vida.ogg")  # Creamos una variable que guarde el sonido de rebote con los bloques
 
 bloques = pygame.sprite.Group()  # Creamos un grupo de sprites llamado para los bloques
 pelotas = pygame.sprite.Group()  # Creamos un grupo de sprites para la pelota
