@@ -30,7 +30,7 @@ class Bloque(pygame.sprite.Sprite):  # Creamos la clase 'Bloque' que derivara de
 
 class Pelota(pygame.sprite.Sprite):  # Creamos la clase 'Pelota' que derivara de la clase Sprite
 
-    velocidad = 5.0  # Velocidad de la pelota
+    velocidad = 6.0  # Velocidad de la pelota
 
     x = 300  # Posicion X inicial
     y = 320  # Posicion Y inicial
@@ -55,8 +55,7 @@ class Pelota(pygame.sprite.Sprite):  # Creamos la clase 'Pelota' que derivara de
         self.rumbo -= diff  # Restamos a rumbo el valor de diff
 
     def update(self):  # Creamos la funcion update
-        rumbo_radianes = math.radians(
-            self.rumbo)  # Creamos la variable rumbo_radianes a partir del atributo rumbo del objeto
+        rumbo_radianes = math.radians(self.rumbo)  # Creamos la variable rumbo_radianes a partir del atributo rumbo del objeto
 
         self.x += self.velocidad * math.sin(rumbo_radianes)  # Cambia la posición X según la velocidad y el rumbo
         self.y -= self.velocidad * math.cos(rumbo_radianes)  # Cambia la posición Y según la velocidad y el rumbo
@@ -77,9 +76,11 @@ class Pelota(pygame.sprite.Sprite):  # Creamos la clase 'Pelota' que derivara de
             self.x = self.ancho_pantalla - self.largo - 1
 
         if self.y > 600:  # Si la pelota toca el borde inferior
-            pygame.mixer.Sound.play(sonidoPerderVida)
-            self.reiniciar()
+            pygame.mixer.Sound.play(sonidoPerderVida) # Se reproduce el sonido
+            self.reiniciar() # Se reinicia la pelota
 
+    # Función para reiniciar la pelota a su ubicación inicial si tocará el borde inferior
+    
     def reiniciar(self):
         self.x = 300
         self.y = 320
@@ -111,18 +112,13 @@ class Protagonista(pygame.sprite.Sprite):  # Creamos la clase protagonista (pala
         elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:  # Si pulsamos la tecla '-->' o 'd'
             self.rect.x = self.rect.x + 10  # Movemos la pala a la derecha
 
-        # Limita el margen izquierdo
+        # Limita el margen izquierdo para que no pueda avanzar la pala
         if self.rect.left < 0:
             self.rect.left = 0
 
-        # Limita el margen derecho
+        # Limita el margen derecho para que no pueda avanzar la pala
         if self.rect.right > self.largo_pantalla:
             self.rect.right = self.largo_pantalla
-
-        # Limita el margen superior
-        if self.rect.top < 0:
-            self.rect.top = 0
-
 
 # endregion
 
@@ -170,11 +166,11 @@ todos_los_sprites.add(pelota)  # Anadimos la pelota al grupo de sprites para tod
 separacionSuperior = 80  # Separacion del borde superior respecto a la primera fila de bloques
 
 for fila in range(5):  # Por cada fila de bloques (5)
-    for columna in range(8):  # Por cada columna en cada fila (11)
-        bloque = Bloque(columna * (90 + 2) + 35, separacionSuperior)  # Creamos un bloque (posicionX, posicionY) (60 es largo bloque)
+    for columna in range(8):  # Por cada columna en cada fila (8)
+        bloque = Bloque(columna * (90 + 2) + 35, separacionSuperior)  # Creamos un bloque (posicionX, posicionY)
         bloques.add(bloque)  # Anadimos el bloque creado al grupo de sprites de todos los bloques
         todos_los_sprites.add(bloque)  # Anadimos el bloque creado al grupo de sprites de todos los sprites
-    separacionSuperior += 35  # Cuando cambiamos de fila aumentamos la separacion superior para que no se pisen las filas entre ellas (10 es alto bloque)
+    separacionSuperior += 35  # Cuando cambiamos de fila aumentamos la separacion superior para que no se pisen las filas entre ellas
 
 reloj = pygame.time.Clock()  # Creamos una variable para establecer un limite de FPS
 game_over = False  # Creamos una variable para saber si hemos perdido
